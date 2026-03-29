@@ -1,0 +1,36 @@
+# Dependencies
+node_modules
+
+# Build output
+dist
+/dist
+/build
+*.js
+*.js.map
+*.d.ts
+.tsbuildinfo
+dist-ssr
+*.local
+
+# Environment variables
+.env
+.env.*
+
+# IDE files
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# OS files and logs
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+coverage/
+
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
