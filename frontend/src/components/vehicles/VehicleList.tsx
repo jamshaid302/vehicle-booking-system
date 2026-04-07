@@ -17,6 +17,7 @@ import { Loader } from "../common/Loader";
 import { VehicleTable } from "./vehicleTable";
 import { VehicleModal } from "./VehicleModal";
 import SearchIcon from "@mui/icons-material/Search";
+import { useDebounce } from "../../utils/hook";
 
 export const VehicleList: React.FC = memo(() => {
   const [vehicles, setVehicles] = useState<IVehicle[]>([]);
@@ -26,15 +27,15 @@ export const VehicleList: React.FC = memo(() => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<IVehicle | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const fetchVehicles = async () => {
     setLoading(true);
     try {
-      const res = await getVehicles(page, 10, searchTerm);
+      const res = await getVehicles(page, 10, debouncedSearchTerm);
       setVehicles(res?.data?.data);
       setTotalPages(res?.data?.pages || 1);
     } catch (err) {
-      console.error(err);
       console.error(err);
       alert(
         (err as { response?: { data?: { message?: string } } }).response?.data
@@ -47,7 +48,7 @@ export const VehicleList: React.FC = memo(() => {
 
   useEffect(() => {
     fetchVehicles();
-  }, [page, searchTerm]);
+  }, [page, debouncedSearchTerm]);
 
   const handleSave = async (vehicle: Partial<IVehicle>) => {
     try {

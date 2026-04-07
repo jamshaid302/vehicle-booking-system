@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Loader } from "../common/Loader";
 import SearchIcon from "@mui/icons-material/Search";
+import { useDebounce } from "../../utils/hook";
 
 export const CustomerList: React.FC = memo(() => {
   const [customers, setCustomers] = useState<ICustomer[]>([]);
@@ -28,11 +29,12 @@ export const CustomerList: React.FC = memo(() => {
     null,
   );
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
   const fetchCustomers = async () => {
     setLoading(true);
     try {
-      const res = await getCustomers(page, 10, searchTerm);
+      const res = await getCustomers(page, 10, debouncedSearchTerm);
       setCustomers(res?.data?.data);
       setTotalPages(res?.data?.pages);
     } catch (err) {
@@ -48,7 +50,7 @@ export const CustomerList: React.FC = memo(() => {
 
   useEffect(() => {
     fetchCustomers();
-  }, [page, searchTerm]);
+  }, [page, debouncedSearchTerm]);
 
   const handleSave = async (customer: Partial<ICustomer>) => {
     try {

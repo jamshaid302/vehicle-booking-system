@@ -1,4 +1,4 @@
-import React, { useEffect, useState, memo, useCallback } from "react";
+import React, { useEffect, useState, memo, useCallback, useRef } from "react";
 import { BookingTable } from "../../components/bookings/BookingTable";
 import { BookingModal } from "../../components/bookings/BookingModal";
 import type { IBooking } from "../../types/booking";
@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import { Loader } from "../common/Loader";
 import SearchIcon from "@mui/icons-material/Search";
+import { useDebounce } from "../../utils/hook";
 
 export const BookingList: React.FC = memo(() => {
   const [bookings, setBookings] = useState<IBooking[]>([]);
@@ -26,14 +27,16 @@ export const BookingList: React.FC = memo(() => {
   const [modalOpen, setModalOpen] = useState(false);
   const [editingBooking, setEditingBooking] = useState<IBooking | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const debouncedSearchTerm = useDebounce(searchTerm, 300);
 
-  const fetchBookings = async () => {
+  const fetchBookings = async (signal?: AbortSignal) => {
     setLoading(true);
     try {
-      const res = await getBookings(page, 10, searchTerm);
+      const res = await getBookings(page, 10, debouncedSearchTerm, signal);
       setBookings(res?.data?.data || []);
       setTotalPages(res?.data?.pages || 1);
-    } catch (err) {
+    } catch (err: any) {
+      if (err.name === "CanceledError") return;
       console.error(err);
       alert(
         (err as { response?: { data?: { message?: string } } }).response?.data
@@ -45,8 +48,11 @@ export const BookingList: React.FC = memo(() => {
   };
 
   useEffect(() => {
-    fetchBookings();
-  }, [page, searchTerm]);
+    const controller = new AbortController();
+    fetchBookings(controller.signal);
+
+    return () => controller.abort();
+  }, [page, debouncedSearchTerm]);
 
   const handleSave = async (booking: Partial<IBooking>) => {
     try {
