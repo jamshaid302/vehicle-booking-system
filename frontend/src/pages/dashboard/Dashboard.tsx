@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Paper, Typography, Box, Tabs, Tab } from "@mui/material";
+import { Paper, Typography, Box, Tabs, Tab, Button } from "@mui/material";
 import { getDashboardSummary } from "../../services/dashboardService";
 import { CustomerList } from "../../components/customers/CustomerList";
 import { Loader } from "../../components/common/Loader";
 import { BookingList } from "../../components/bookings/BookingList";
 import { VehicleList } from "../../components/vehicles/VehicleList";
+import { logout } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 
 interface DashboardSummary {
   totalCustomers: number;
@@ -14,6 +16,7 @@ interface DashboardSummary {
 }
 
 export const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
   const [summary, setSummary] = useState<DashboardSummary>({
     totalCustomers: 0,
     totalVehicles: 0,
@@ -39,6 +42,17 @@ export const Dashboard: React.FC = () => {
     fetchSummary();
   }, []);
 
+  const handleLogout = async () => {
+    try {
+      const res = await logout();
+      if (res.success) {
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error("Logout failed:", error);
+    }
+  };
+
   const cardClasses = "p-4 rounded shadow text-white";
 
   if (loading) {
@@ -47,9 +61,17 @@ export const Dashboard: React.FC = () => {
 
   return (
     <Box p={6}>
-      <Typography variant="h4" gutterBottom>
-        Dashboard
-      </Typography>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        mb={4}
+      >
+        <Typography variant="h4">Dashboard</Typography>
+        <Button variant="contained" color="secondary" onClick={handleLogout}>
+          Logout
+        </Button>
+      </Box>
 
       <Box display="flex" flexWrap="wrap" gap={3} mb={4}>
         <Paper

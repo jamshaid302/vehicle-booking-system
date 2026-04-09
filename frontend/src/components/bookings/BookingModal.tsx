@@ -60,10 +60,10 @@ export const BookingModal: React.FC<BookingModalProps> = ({
         setVehicles(vehRes?.data?.data || []);
       } catch (err) {
         console.error(err);
-        alert(
-          (err as { response?: { data?: { message?: string } } }).response?.data
-            ?.message || "Something went wrong",
-        );
+        // alert(
+        //   (err as { response?: { data?: { message?: string } } }).response?.data
+        //     ?.message || "Something went wrong",
+        // );
       } finally {
         setLoading(false);
       }

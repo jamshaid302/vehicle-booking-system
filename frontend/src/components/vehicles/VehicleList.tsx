@@ -14,7 +14,7 @@ import {
   InputAdornment,
 } from "@mui/material";
 import { Loader } from "../common/Loader";
-import { VehicleTable } from "./vehicleTable";
+import { VehicleTable } from "./VehicleTable";
 import { VehicleModal } from "./VehicleModal";
 import SearchIcon from "@mui/icons-material/Search";
 import { useDebounce } from "../../utils/hook";
@@ -37,10 +37,10 @@ export const VehicleList: React.FC = memo(() => {
       setTotalPages(res?.data?.pages || 1);
     } catch (err) {
       console.error(err);
-      alert(
-        (err as { response?: { data?: { message?: string } } }).response?.data
-          ?.message || "Something went wrong",
-      );
+      // alert(
+      //   (err as { response?: { data?: { message?: string } } }).response?.data
+      //     ?.message || "Something went wrong",
+      // );
     } finally {
       setLoading(false);
     }

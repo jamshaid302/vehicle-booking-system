@@ -1,10 +1,14 @@
 import { api } from "./api";
+import { setAccessToken } from "./token.service";
 
 export const login = async (email: string, password: string) => {
-  const res = await api.post("/auth/login", { email, password });
+  const res = await api.post(
+    "/auth/login",
+    { email, password },
+    { withCredentials: true },
+  );
 
-  const token = res.data.token;
-  localStorage.setItem("token", token);
+  setAccessToken(res.data.accessToken);
 
   return res.data;
 };
@@ -14,7 +18,9 @@ export const signup = async (email: string, password: string) => {
   return res.data;
 };
 
-export const logout = () => {
-  localStorage.removeItem("token");
-  delete api.defaults.headers.common["Authorization"];
+export const logout = async () => {
+  const res = await api.post("/auth/logout", {}, { withCredentials: true });
+  setAccessToken(null);
+
+  return res.data;
 };

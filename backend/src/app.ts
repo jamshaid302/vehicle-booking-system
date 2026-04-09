@@ -1,5 +1,6 @@
 import express, { Request, Response, NextFunction } from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRoutes from "./modules/auth/auth.routes";
 import customerRoutes from "./modules/customer/customer.routes";
 import vehicleRoutes from "./modules/vehicle/vehicle.routes";
@@ -8,8 +9,14 @@ import dashboardRoutes from "./modules/dashboard/dashboard.routes";
 
 const app = express();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
 app.use(express.json());
+app.use(cookieParser());
 
 app.get("/", (_, res) => {
   res.send("hello world");
